@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TrafficFlow OS - Smart City Digital Twin Dashboard</title>
+  <!-- Google Fonts Outfit & Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- Main Stylesheet -->
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- Top HUD Bar -->
+  <header>
+    <div class="logo-section">
+      <i data-lucide="satellite" class="logo-icon"></i>
+      <span class="logo-text">TrafficFlow OS</span>
+      <span class="logo-badge">V1.0 DIGITAL TWIN</span>
+    </div>
+    
+    <div class="quick-stats">
+      <div class="stat-item">
+        <span class="stat-label">System Mode</span>
+        <span class="stat-value" id="hdr-system-mode">
+          <span class="status-dot pulsing"></span>&nbsp;NORMAL RUN
+        </span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-label">Avg Network Speed</span>
+        <span class="stat-value green" id="hdr-avg-speed">40.5 km/h</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-label">Active Incidents</span>
+        <span class="stat-value blue" id="hdr-incidents">0 Alerts</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-label">Protocol Rx Latency</span>
+        <span class="stat-value" style="color: var(--accent-blue);" id="hdr-latency">8.5 ms</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Dashboard Container -->
+  <main class="dashboard-grid">
+
+    <!-- Left Column: AI Prediction & Protocol Console -->
+    <section class="panel">
+      <!-- Environmental inputs -->
+      <div class="panel-section">
+        <div class="panel-section-title">
+          <span>AI Environment Settings</span>
+          <i data-lucide="sliders-horizontal"></i>
+        </div>
+        
+        <div class="form-group">
+          <label for="weather-select">Weather Condition</label>
+          <select id="weather-select" class="form-select">
+            <option value="clear">☀️ Clear Skies</option>
+            <option value="rain">🌧️ Rain Shower (Mild)</option>
+            <option value="storm">⛈️ Severe Storm (Heavy)</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="event-select">Public Event Modifier</label>
+          <select id="event-select" class="form-select">
+            <option value="none">🎟️ No Active Events</option>
+            <option value="sports">⚽ Stadium Derby (Sports)</option>
+            <option value="concert">🎵 Core Arena Concert</option>
+          </select>
+        </div>
+
+        <div class="form-group" style="flex-direction: row; justify-content: space-between; align-items: center;">
+          <label for="holiday-checkbox" style="cursor: pointer;">Public Holiday Active</label>
+          <input type="checkbox" id="holiday-checkbox" style="cursor: pointer; width: 16px; height: 16px; accent-color: var(--accent-blue);">
+        </div>
+
+        <div class="form-group mt-2">
+          <div class="slider-group">
+            <label for="hour-slider">Time of Day (24h)</label>
+            <span class="slider-val" id="hour-val">12:00</span>
+          </div>
+          <input type="range" id="hour-slider" min="0" max="23.75" step="0.25" value="12">
+        </div>
+      </div>
+
+      <!-- AI Predictions Results -->
+      <div class="panel-section">
+        <div class="panel-section-title">
+          <span>AI Traffic Predictions</span>
+          <i data-lucide="brain-circuit"></i>
+        </div>
+        
+        <div class="comparison-grid">
+          <div class="metric-card">
+            <span class="stat-label">Delay Index</span>
+            <div class="metric-card-val purple" id="pred-delay-index">1.2x</div>
+          </div>
+          <div class="metric-card">
+            <span class="stat-label">Accident Risk</span>
+            <div class="metric-card-val" id="pred-accident-risk" style="color: var(--accent-yellow);">5%</div>
+          </div>
+        </div>
+
+        <!-- Hotspot predictions -->
+        <div class="card">
+          <div class="card-title">Predicted Hotspots (LSTM Analysis)</div>
+          <div id="pred-hotspots-list" style="font-size: 11px; display: flex; flex-direction: column; gap: 6px;">
+            <div class="text-secondary" style="font-style: italic;">Calibrating model outputs...</div>
+          </div>
+        </div>
+
+        <!-- Trend graph -->
+        <div class="card">
+          <div class="card-title">60-Min Congestion Forecast (%)</div>
+          <div class="chart-container">
+            <canvas id="trend-chart"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- Custom Traffic OS Protocol Monitor -->
+      <div class="panel-section" style="border-bottom: none; flex-grow: 1; display: flex; flex-direction: column; min-height: 250px;">
+        <div class="panel-section-title">
+          <span>Traffic Protocol Monitor (IoT)</span>
+          <span style="font-size: 9px; color: var(--accent-blue); letter-spacing: 0.5px;">TRAFFIC_PACKET_V1</span>
+        </div>
+
+        <!-- Console console logs -->
+        <div class="protocol-console" id="protocol-console">
+          <!-- Logs will populate in real time -->
+        </div>
+
+        <!-- Network packets stats -->
+        <div class="comparison-grid mt-2" style="margin-bottom: 0;">
+          <div class="metric-card">
+            <span class="stat-label" style="font-size: 8px;">Protocol Throughput</span>
+            <div class="metric-card-val blue" id="proto-throughput" style="font-size: 13px;">0 pkts/s</div>
+          </div>
+          <div class="metric-card">
+            <span class="stat-label" style="font-size: 8px;">Network Loss Rate</span>
+            <div class="metric-card-val green" id="proto-loss" style="font-size: 13px;">0.00%</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Center Column: Canvas Map Simulator -->
+    <section class="map-container">
+      
+      <!-- Top overlay controls -->
+      <div class="map-overlay map-tools">
+        <button class="btn" id="sim-play-pause-btn" title="Play/Pause Simulation">
+          <i data-lucide="pause" id="sim-play-icon"></i>
+        </button>
+        <button class="btn active" id="speed-1x-btn">1x</button>
+        <button class="btn" id="speed-2x-btn">2x</button>
+        <button class="btn" id="speed-5x-btn">5x</button>
+        
+        <div style="width: 1px; background: var(--border-color); height: 28px; margin: 0 4px;"></div>
+        
+        <div class="form-group" style="margin-bottom: 0; flex-direction: row; align-items: center; gap: 6px;">
+          <select id="spawn-type" class="form-select" style="padding: 4px 8px; font-size: 11px; height: 30px;">
+            <option value="car">🚗 Spawn Car</option>
+            <option value="truck">🚛 Spawn Truck</option>
+            <option value="ambulance">🚑 Emergency Amb</option>
+          </select>
+          <button class="btn primary" id="spawn-btn" style="height: 30px; padding: 0 12px;">Deploy</button>
+        </div>
+
+        <button class="btn danger" id="reset-sim-btn" title="Reset Grid Simulation">
+          <i data-lucide="refresh-cw"></i>
+        </button>
+      </div>
+
+      <!-- Realtime Map stats overlay -->
+      <div class="map-overlay map-stats">
+        <div class="map-stats-row">
+          <span class="text-secondary">Simulated Vehicles:</span>
+          <span class="map-stats-val" id="map-stat-vehicles">0</span>
+        </div>
+        <div class="map-stats-row">
+          <span class="text-secondary">Avg Congestion:</span>
+          <span class="map-stats-val" id="map-stat-congestion" style="color: var(--accent-green);">0%</span>
+        </div>
+        <div class="map-stats-row">
+          <span class="text-secondary">Grid Throughput:</span>
+          <span class="map-stats-val" id="map-stat-throughput">0 vehicles</span>
+        </div>
+      </div>
+
+      <!-- Interactive Canvas -->
+      <canvas id="city-canvas"></canvas>
+
+      <!-- Bottom overlay context status panel -->
+      <div class="map-overlay" id="selection-card" style="bottom: 15px; left: 15px; right: 15px; width: calc(100% - 30px); display: none;">
+        <div class="flex-row-center">
+          <div style="display: flex; gap: 20px; align-items: center;">
+            <div id="selection-icon-box" style="font-size: 18px; color: var(--accent-blue);">
+              <i data-lucide="road"></i>
+            </div>
+            <div>
+              <div id="selection-name" style="font-weight: 700; font-size: 13px;">Silicon Boulevard</div>
+              <div id="selection-details" style="font-size: 10px; color: var(--text-secondary); margin-top: 2px;">
+                Speed Limit: 50 km/h | Congestion: 12% | Active Cars: 2
+              </div>
+            </div>
+          </div>
+          <div style="display: flex; gap: 10px;">
+            <button class="btn danger small" id="block-road-btn">
+              <i data-lucide="octagon-alert"></i>&nbsp;<span id="block-btn-text">Place Roadblock</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Interactive help banner -->
+      <div class="map-instruction" id="map-instructions-tip">
+        🖱️ Drag map to Pan. Scroll to Zoom. Click intersections/roads to inspect or block.
+      </div>
+    </section>
+
+    <!-- Right Column: Smart Signals & Route Optimizer -->
+    <section class="panel right">
+      <!-- Smart Signals Module -->
+      <div class="panel-section">
+        <div class="panel-section-title">
+          <span>AI Signal Simulator</span>
+          <i data-lucide="traffic-cone"></i>
+        </div>
+
+        <div class="btn-group">
+          <button class="btn active" id="signal-fixed-btn">
+            <i data-lucide="timer"></i> Fixed Cycles
+          </button>
+          <button class="btn" id="signal-adaptive-btn">
+            <i data-lucide="cpu"></i> Adaptive (AI)
+          </button>
+        </div>
+        
+        <div class="mode-details" id="signal-mode-description">
+          Fixed timing phase loops North-South and East-West intersections on a static timeline, regardless of queue lengths.
+        </div>
+
+        <div class="comparison-grid">
+          <div class="metric-card">
+            <span class="stat-label">Avg Wait Time</span>
+            <div class="metric-card-val" id="signal-avg-wait" style="color: var(--accent-yellow);">0s</div>
+          </div>
+          <div class="metric-card">
+            <span class="stat-label">Throughput / min</span>
+            <div class="metric-card-val green" id="signal-throughput">0 vph</div>
+          </div>
+        </div>
+
+        <!-- Comparative Chart -->
+        <div class="card">
+          <div class="card-title">Average Wait Delay Comparison (sec)</div>
+          <div class="chart-container" style="height: 120px;">
+            <canvas id="wait-comparison-chart"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- Dynamic Route Optimizer -->
+      <div class="panel-section">
+        <div class="panel-section-title">
+          <span>Route Optimizer</span>
+          <i data-lucide="navigation"></i>
+        </div>
+
+        <div class="form-group">
+          <label>Simulation Path Queries</label>
+          <div class="route-selector-box">
+            <label for="route-source-select">Source</label>
+            <select id="route-source-select" class="form-select" style="flex-grow: 1;"></select>
+          </div>
+          <div class="route-selector-box">
+            <label for="route-target-select">Target</label>
+            <select id="route-target-select" class="form-select" style="flex-grow: 1;"></select>
+          </div>
+        </div>
+
+        <div class="btn-group mt-2">
+          <button class="btn" id="query-route-btn">
+            <i data-lucide="route"></i> Query Path
+          </button>
+          <button class="btn primary" id="deploy-route-vehicle-btn">
+            <i data-lucide="play-circle"></i> Deploy Test Car
+          </button>
+        </div>
+
+        <!-- Optimized routing stats details card -->
+        <div class="card" id="routing-results-card" style="display: none;">
+          <div class="card-title" style="color: var(--accent-purple);">Calculated Route Options</div>
+          <div style="font-size: 11px; display: flex; flex-direction: column; gap: 8px;">
+            <div style="display: flex; justify-content: space-between;">
+              <span class="text-secondary">Optimal Path:</span>
+              <span class="stat-value purple" id="route-opt-time">0s (via Mainframe)</span>
+            </div>
+            <div style="display: flex; justify-content: space-between;">
+              <span class="text-secondary">Historical Path:</span>
+              <span class="stat-value yellow" id="route-hist-time">0s (Distance only)</span>
+            </div>
+            <div style="display: flex; justify-content: space-between;">
+              <span class="text-secondary">Traffic Load Savings:</span>
+              <span class="stat-value green" id="route-savings">0% Delay Saved</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Emergency Vehicle Corridor Mode -->
+      <div class="panel-section" style="border-bottom: none;">
+        <div class="panel-section-title">
+          <span>Emergency Corridor Control</span>
+          <i data-lucide="shield-alert" style="color: var(--accent-red);"></i>
+        </div>
+
+        <div class="mode-details" style="color: var(--text-secondary);">
+          Instruct public service algorithms to clear traffic and open a green light wave corridor for incoming emergency sirens.
+        </div>
+
+        <div class="btn-group">
+          <button class="btn danger" id="trigger-ambulance-btn" style="flex-grow: 1;">
+            <i data-lucide="ambulance"></i> Initialize Emergency Corridor
+          </button>
+        </div>
+
+        <div id="ambulance-status-container" style="display: none;" class="card">
+          <div class="card-title" style="color: var(--accent-red); display: flex; align-items: center; justify-content: space-between;">
+            <span>Ambulance Status</span>
+            <span class="status-dot pulsing" style="background-color: var(--accent-red); box-shadow: 0 0 8px var(--accent-red);"></span>
+          </div>
+          <div style="font-size: 11px; display: flex; flex-direction: column; gap: 6px;">
+            <div style="display: flex; justify-content: space-between;">
+              <span class="text-secondary">Signal Corridor:</span>
+              <span class="stat-value" style="color: var(--accent-blue);" id="amb-signal-status">GREEN CORRIDOR ACTIVE</span>
+            </div>
+            <div style="display: flex; justify-content: space-between;">
+              <span class="text-secondary">Current Location:</span>
+              <span class="stat-value" id="amb-loc-status">Approaching Node 4</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Emergency Mode Toast Notification Banner -->
+  <div class="notification-banner" id="notif-banner">
+    <i data-lucide="bell-ring" id="notif-icon"></i>
+    <span id="notif-message">Ambulance dispatched: Green Corridor deployed!</span>
+  </div>
+
+  <!-- Javascript Modules -->
+  <script src="simulation.js"></script>
+  <script src="router.js"></script>
+  <script src="ai-engine.js"></script>
+  <script src="signal-system.js"></script>
+  <script src="protocol.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
