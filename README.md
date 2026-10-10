@@ -1,8 +1,13 @@
 # 🚦 TrafficFlow OS
 
+[![Live Demo](https://img.shields.io/badge/Live%20Demo-Open%20App-brightgreen?style=for-the-badge&logo=netlify)](https://traficflow.netlify.app/)
+
 **A browser-based smart-city traffic digital twin.** TrafficFlow OS simulates a 16-intersection city grid with live vehicles, adaptive traffic signals, congestion-aware routing, emergency green corridors, and a prediction dashboard. It is built with vanilla JavaScript and HTML5 Canvas, with no build step and no backend.
 
-> ⚠️ **Prototype status:** This is a simulation and visualization prototype. The "AI" components are heuristic models, not trained ML models. 
+🔗 **Live Demo:** [https://traficflow.netlify.app/](https://traficflow.netlify.app/)
+
+> ⚠️ **Prototype status:** This is a simulation and visualization prototype. The "AI" components are heuristic models, not trained ML models.
+
 ---
 
 ## ✨ Features
@@ -65,6 +70,9 @@ protocol.js         TRAFFIC_PACKET_V1 packet protocol and console
 ---
 
 ## 🚀 Getting Started
+
+### 🌐 Try it online
+No setup needed: **[Open the live demo](https://traficflow.netlify.app/)**
 
 ### Prerequisites
 - Any modern browser (Chrome, Edge, Firefox, Safari)
@@ -133,6 +141,7 @@ Open `http://localhost:8000`.
 - **Chart.js** for forecast and comparison charts
 - **Lucide** for icons
 - **Google Fonts** (Outfit, Inter)
+- **Netlify** for hosting
 
 ---
 
@@ -159,8 +168,6 @@ Open `http://localhost:8000`.
 
 ---
 
-
-
 ## 👤 Author
 Kavana BS 
 <p align="left">
@@ -174,6 +181,4 @@ Kavana BS
 
 ---
 
-
 <p align="center"><em>"Keep building, keep learning."</em></p>
-
