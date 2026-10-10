@@ -2,8 +2,7 @@
 
 **A browser-based smart-city traffic digital twin.** TrafficFlow OS simulates a 16-intersection city grid with live vehicles, adaptive traffic signals, congestion-aware routing, emergency green corridors, and a prediction dashboard. It is built with vanilla JavaScript and HTML5 Canvas, with no build step and no backend.
 
-> ⚠️ **Prototype status:** This is a simulation and visualization prototype. The "AI" components are heuristic models, not trained ML models. See [Limitations](#-limitations--honest-notes).
-
+> ⚠️ **Prototype status:** This is a simulation and visualization prototype. The "AI" components are heuristic models, not trained ML models. 
 ---
 
 ## ✨ Features
@@ -163,4 +162,18 @@ Open `http://localhost:8000`.
 
 
 ## 👤 Author
+Kavana BS 
+<p align="left">
+  <a href="https://www.linkedin.com/in/kavanayadav-59991b392" target="_blank">
+    <img src="https://img.shields.io/badge/LinkedIn-Connect-blue?style=flat-square&logo=linkedin" />
+  </a>
+  <a href="mailto:kavanayadav3@gmail.com">
+    <img src="https://img.shields.io/badge/Email-Say%20Hi!-red?style=flat-square&logo=gmail" />
+  </a>
+</p>
+
+---
+
+
+<p align="center"><em>"Keep building, keep learning."</em></p>
 
